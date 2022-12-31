@@ -50,7 +50,7 @@ const Navbar = () => {
                   }}
                 >
                   <Link href="/">
-                      <Image src={Logo} alt="logo" width={140} height={40} />
+                    <Image src={Logo} alt="logo" width={140} height={40} />
                   </Link>
                 </chakra.h1>
               <HStack

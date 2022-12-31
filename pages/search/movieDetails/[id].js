@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getMovieDetail } from "../../../store/reducers/apiSlice";
 import Head from "next/head";
-import { BeatLoader } from "react-spinners";
+import Loading from "../../../components/Loading";
 
 index.getInitialProps = async ({ query }) => {
   const { id } = query;
@@ -28,14 +28,7 @@ function index({ id }) {
         <title>Movie Details</title>
       </Head>
       {isLoading ? (
-        <Box
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          height={500}
-        >
-          <BeatLoader color={"#0bb5df"} loading={isLoading} size={20} />
-        </Box>
+        <Loading isLoading={isLoading} />
       ) : (
         Object.keys(details).length !== 0 && (
             <Grid

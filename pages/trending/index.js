@@ -1,19 +1,29 @@
 import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTrendings } from "../../store/reducers/apiSlice";
+import { getTrendings, reset } from "../../store/reducers/apiSlice";
 import Head from "next/head";
 import Link from "next/link";
 import { BeatLoader } from "react-spinners";
+import Pagination from "../../components/Pagination";
 
 function index() {
   const dispatch = useDispatch();
-  const trendingMovies = useSelector((state) => state.api.movies.results);
+  const trendingMovies = useSelector((state) => state.api.movies);
   const isLoading = useSelector((state) => state.api.isLoading);
+  
+  const [page, setPage] = useState(1);
+  const totalPages = trendingMovies.total_pages;
+
+  const handlePageChange = (page) => {
+    setPage(page);
+  };
+
 
   useEffect(() => {
-    dispatch(getTrendings());
-  }, [dispatch]);
+    dispatch(reset());
+    dispatch(getTrendings(page));
+  }, [dispatch, page]);
 
   return (
     <>
@@ -30,7 +40,7 @@ function index() {
           <BeatLoader color={"#0bb5df"} loading={isLoading} size={20} />
         </Box>
       ) :
-      trendingMovies && (
+      trendingMovies.results && (
         <>
           <Heading as="h3" size="md" my="6">
             Trending Movies
@@ -44,7 +54,7 @@ function index() {
             gap={6}
             mt="3"
           >
-            {trendingMovies?.map((movie) => (
+            {trendingMovies.results?.map((movie) => (
               <GridItem colSpan={1} key={movie.id} display="inline-flex">
                 <Card shadow="xl" border="1px solid" borderColor="gray.200">
                   <CardBody>
@@ -72,6 +82,7 @@ function index() {
           </Grid>
         </>
       )}
+      <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange}/>
     </>
   );
 }

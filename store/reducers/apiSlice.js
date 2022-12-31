@@ -10,57 +10,69 @@ const initialState = {
   peopleDetail: [],
   searchResult: [],
   isLoading: false,
-  error: null,
+  error: {},
 };
 
-export const getMovies = createAsyncThunk("api/getMovies", async () => {
-  const movies = await getAllDiscovers();
-  return movies;
+export const getMovies = createAsyncThunk("api/getMovies", async (page) => {
+  const movies = await getAllDiscovers(page);
+  return movies.data;
 });
 
-export const getUpcomings = createAsyncThunk("api/getUpcomings", async () => {
-  const movies = await getAllUpcomings();
-  return movies;
+export const getUpcomings = createAsyncThunk("api/getUpcomings", async (page) => {
+  const movies = await getAllUpcomings(page);
+  return movies.data;
 });
 
-export const getTrendings = createAsyncThunk("api/getTrendings", async () => {
-  const movies = await getAllTrendings();
-  return movies;
+export const getTrendings = createAsyncThunk("api/getTrendings", async (page) => {
+  const movies = await getAllTrendings(page);
+  return movies.data;
 });
 
-export const getTvShows = createAsyncThunk("api/getTvShows", async () => {
-  const tvShows = await getAllTvShows();
-  return tvShows;
+export const getTvShows = createAsyncThunk("api/getTvShows", async (page) => {
+  const tvShows = await getAllTvShows(page);
+  return tvShows.data;
 });
-export const getPeoples = createAsyncThunk("api/getPeoples", async () => {
-  const peoples = await getAllPeoples();
-  return peoples;
+export const getPeoples = createAsyncThunk("api/getPeoples", async (page) => {
+  const peoples = await getAllPeoples(page);
+  return peoples.data;
 });
 
 export const getMovieDetail = createAsyncThunk("api/getMovieDetail", async (id) => {
     const movieDetail = await getMovieDetails(id);
-    return movieDetail;
+    return movieDetail.data;
 });
 
-export const getTvDetail = createAsyncThunk("api/getTvDetail", async (id) => {
-  const tvDetail = await getTvDetails(id);
-  return tvDetail;
+export const getTvShowDetail = createAsyncThunk("api/getTvDetail", async (id) => {
+    const tvDetail = await getTvDetails(id);
+    return tvDetail.data;
 });
 
 export const getPeopleDetail = createAsyncThunk("api/getPeopleDetail", async (id) => {
     const peopleDetail = await getPeopleDetails(id);
-    return peopleDetail;
+    return peopleDetail.data;
 });
 
-export const getSearch = createAsyncThunk("api/getSearch", async (keyword) => {
-    const searchResult = await getSearchResult(keyword);
-    return searchResult;
+export const getSearch = createAsyncThunk("api/getSearch", async (keyword, page) => {
+    const searchResult = await getSearchResult(keyword, page);
+    return searchResult.data;
 });
 
 export const apiSlice = createSlice({
     name: "api",
     initialState,
-    reducers: {},
+    reducers: {
+        reset: (state)=> {
+            state.movies= [];
+            state.movieDetail= [];
+            state.tvShows= [];
+            state.tvDetail= [];
+            state.peoples= [];
+            state.peopleDetail= [];
+            state.searchResult= [];
+            state.isLoading = false;
+            state.error = {};
+        }
+    },
     extraReducers: (builder) => {
         builder.addCase(getMovies.pending, (state) => {
             state.isLoading = true;
@@ -128,14 +140,14 @@ export const apiSlice = createSlice({
             state.isLoading = false;
             state.error = action.error;
         })
-        builder.addCase(getTvDetail.pending, (state) => {
+        builder.addCase(getTvShowDetail.pending, (state) => {
             state.isLoading = true;
         })
-        builder.addCase(getTvDetail.fulfilled, (state, action) => {
+        builder.addCase(getTvShowDetail.fulfilled, (state, action) => {
             state.isLoading = false;
             state.tvDetail = action.payload;
         })
-        builder.addCase(getTvDetail.rejected, (state, action) => {
+        builder.addCase(getTvShowDetail.rejected, (state, action) => {
             state.isLoading = false;
             state.error = action.error;
         })
@@ -163,5 +175,7 @@ export const apiSlice = createSlice({
         })
     }
 });
+
+export const { reset } = apiSlice.actions;
 
 export default apiSlice.reducer;

@@ -1,24 +1,36 @@
 import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text, FormControl, Input, Button } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getTrendings } from "../store/reducers/apiSlice";
+import { getMovies, reset } from "../store/reducers/apiSlice";
 import Head from "next/head";
 import Link from "next/link";
-import { BeatLoader } from "react-spinners";
 import { useRouter } from "next/router";
 import { useToast } from "@chakra-ui/react";
+import Pagination from "../components/Pagination";
+import Loading from "../components/Loading";
+import Rating from "../components/Rating";
 
 function Home() {
     const dispatch = useDispatch();
     const router = useRouter();
     const toast = useToast();
 
-    const trendingMovies = useSelector((state) => state.api.movies.results);
+    const discoverMovies = useSelector((state) => state.api.movies);
     const isLoading = useSelector((state) => state.api.isLoading);
+    const isError = useSelector((state) => state.api.error);
+
+    const [page, setPage] = useState(1)
+    const totalPages = discoverMovies.total_pages
+
+    const handlePageChange = (page) => {
+        setPage(page)
+    }
 
     useEffect(() => {
-        dispatch(getTrendings());
-    }, [dispatch]);
+        dispatch(reset());
+        dispatch(getMovies(page));
+    }, [dispatch, page]);
+
 
     const handleSubmit = (e) => {
         if (e.target.search.value === "") {
@@ -34,9 +46,11 @@ function Home() {
         else {
             e.preventDefault();
             router.push(`/search/${e.target.search.value}`);
-            console.log(e.target.search.value);
+            // console.log(e.target.search.value);
         }
     }
+    
+    console.log(discoverMovies)
 
     return (
         <>
@@ -48,16 +62,9 @@ function Home() {
             </Head>
 
             {isLoading ? (
-                <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                    height={500}
-                >
-                    <BeatLoader color={"#0bb5df"} loading={isLoading} size={20} />
-                </Box>
+                <Loading isLoading={isLoading} />
             ) :
-                trendingMovies && (
+                discoverMovies.results && (
                     <>
                         <Box
                             py={10}
@@ -87,7 +94,7 @@ function Home() {
                         </Box>
 
                         <Heading as="h3" size="md" my="6">
-                            Popular Movies
+                            Discover All Movies
                         </Heading>
                         <Grid
                             templateColumns={{
@@ -98,20 +105,23 @@ function Home() {
                             gap={6}
                             mt="3"
                         >
-                            {trendingMovies?.map((movie) => (
+                            {discoverMovies.results?.map((movie) => (
                                 <GridItem colSpan={1} key={movie.id} display="inline-flex">
                                     <Card shadow="xl" border="1px solid" borderColor="gray.200">
                                         <CardBody>
-                                            <Image
-                                                src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                                alt={movie.name}
-                                                borderRadius="base"
-                                                onError={({ currentTarget }) => {
-                                                currentTarget.onerror = null;
-                                                currentTarget.src = "https://via.placeholder.com/500x750";
-                                                }}
-                                            />
-                                            <Box pt="2">
+                                            <Box position="relative">
+                                                <Image
+                                                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                                    alt={movie.name}
+                                                    borderRadius="base"
+                                                    onError={({ currentTarget }) => {
+                                                    currentTarget.onerror = null;
+                                                    currentTarget.src = "https://via.placeholder.com/500x750";
+                                                    }}
+                                                />
+                                                <Rating rating={movie.vote_average} size="10" />
+                                            </Box>
+                                            <Box pt="5">
                                                 <Link href={`/trending/${movie.id}`}>
                                                     <Heading as="h5" size="sm" pt="1">
                                                         {movie.title || movie.name}
@@ -124,6 +134,8 @@ function Home() {
                                 </GridItem>
                             ))}
                         </Grid>
+
+                        <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
                     </>
                 )
             }

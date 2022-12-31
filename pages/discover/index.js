@@ -1,43 +1,34 @@
-import {Box, Button, Card, CardBody, Grid, GridItem, Heading, Image, Text } from "@chakra-ui/react";
+import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getSearch, reset } from "../../store/reducers/apiSlice";
+import { getMovies, reset } from "../../store/reducers/apiSlice";
 import Head from "next/head";
 import Link from "next/link";
 import { BeatLoader } from "react-spinners";
-import { useRouter } from "next/router";
-import { AiOutlineArrowLeft } from "react-icons/ai";
 import Pagination from "../../components/Pagination";
 
-
-search.getInitialProps = async ({ query }) => {
-  const keyword = query.id;
-
-  return { keyword };
-};
-
-function search({keyword}) {
+function index() {
   const dispatch = useDispatch();
-  const router = useRouter();
-  const searchResults = useSelector((state) => state.api.searchResult);
+  const discoverMovies = useSelector((state) => state.api.movies);
   const isLoading = useSelector((state) => state.api.isLoading);
-
+  
   const [page, setPage] = useState(1);
-  const totalPages = searchResults.total_pages;
+  const totalPages = discoverMovies.total_pages;
 
   const handlePageChange = (page) => {
     setPage(page);
   };
 
+
   useEffect(() => {
     dispatch(reset());
-    dispatch(getSearch(keyword, page));
+    dispatch(getMovies(page));
   }, [dispatch, page]);
 
   return (
     <>
       <Head>
-        <title>Search Movies</title>
+        <title>Discover All Movies</title>
       </Head>
       {isLoading ? (
         <Box
@@ -49,17 +40,11 @@ function search({keyword}) {
           <BeatLoader color={"#0bb5df"} loading={isLoading} size={20} />
         </Box>
       ) :
-      searchResults.results && (
+      discoverMovies.results && (
         <>
-          <Box display="flex" justifyContent="space-between" alignItems="start">
-            <Heading as="h3" size="md" my="6">
-              Search Results for "{keyword}"
-            </Heading>
-            <Button colorScheme="teal" variant="outline" size="sm" mt="5" ml="5" onClick={()=>router.back()}>
-                <AiOutlineArrowLeft/> Back
-            </Button>
-          </Box>
-            
+          <Heading as="h3" size="md" my="6">
+            Trending Movies
+          </Heading>
           <Grid
             templateColumns={{
               md: "repeat(5, 1fr)",
@@ -69,7 +54,7 @@ function search({keyword}) {
             gap={6}
             mt="3"
           >
-            {searchResults.results?.map((movie) => (
+            {discoverMovies.results?.map((movie) => (
               <GridItem colSpan={1} key={movie.id} display="inline-flex">
                 <Card shadow="xl" border="1px solid" borderColor="gray.200">
                   <CardBody>
@@ -83,7 +68,7 @@ function search({keyword}) {
                       }}
                     />
                     <Box pt="2">
-                      <Link href={`/search/movieDetails/${movie.id}`}>
+                      <Link href={`/trending/${movie.id}`}>
                         <Heading as="h5" size="sm" pt="1">
                           {movie.title || movie.name}
                         </Heading>
@@ -102,4 +87,4 @@ function search({keyword}) {
   );
 }
 
-export default search;
+export default index;

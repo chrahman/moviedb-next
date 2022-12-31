@@ -1,24 +1,24 @@
-import { Icon, Box } from "@chakra-ui/react";
-import { FaStar } from "react-icons/fa";
+import { CircularProgress, CircularProgressLabel } from "@chakra-ui/react"
 
-function Rating({rating10}) {
-  let rating = Math.floor(rating10 / 2);
+function Rating({rating, size}) {
   return (
-    <Box py="3">
-        Rating:
-        {[...Array(5)].map((star, i) => {
-            const ratingValue = i + 1;
-            return (
-                <Icon
-                    key={i}
-                    as={FaStar}
-                    aria-label={`Rating: ${ratingValue}`}
-                    color={ratingValue <= rating ? "orange" : "gray"}
-                />
-            );
-        })}
-    </Box>
-  );
+    <CircularProgress
+      ms="3"
+      size={size}
+      max={10}
+      value={rating}
+      color="teal"
+      position="absolute"
+      bottom="-15px"
+      borderRadius="30"
+      background="chakra-body-bg"
+    >
+      <CircularProgressLabel fontSize="xs">
+        {Math.floor(rating)}%
+      </CircularProgressLabel>
+    </CircularProgress>
+
+  )
 }
 
-export default Rating;
+export default Rating
