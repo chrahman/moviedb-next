@@ -20,7 +20,7 @@ function Home() {
     const isError = useSelector((state) => state.api.error);
 
     const [page, setPage] = useState(1)
-    const totalPages = discoverMovies.total_pages
+    const totalPages = discoverMovies.total_pages > 500 ? 500 : discoverMovies.total_pages;
 
     const handlePageChange = (page) => {
         setPage(page)
@@ -28,6 +28,7 @@ function Home() {
 
     useEffect(() => {
         dispatch(reset());
+        console.log(page)
         dispatch(getMovies(page));
     }, [dispatch, page]);
 

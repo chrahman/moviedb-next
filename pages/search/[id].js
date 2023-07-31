@@ -31,7 +31,8 @@ function search({keyword}) {
 
   useEffect(() => {
     dispatch(reset());
-    dispatch(getSearch(keyword, page));
+    console.log(page)
+    dispatch(getSearch({ keyword: keyword, page: page })); // Passing in one object because AsyncThunk only allows 1 parameter
   }, [dispatch, page]);
 
   return (

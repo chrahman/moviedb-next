@@ -68,8 +68,8 @@ export const getTvReview = async (tvReviewId) => {
   return data;
 };
 
-export const getSearchResult = async (query, page) => {
-  const multiSearch = `${API_BASE_URL}/search/multi?api_key=${key}&language=en-US&query=${query}&page=${page}&include_adult=false`;
+export const getSearchResult = async (keyword, page) => {
+  const multiSearch = `${API_BASE_URL}/search/multi?api_key=${key}&language=en-US&query=${keyword}&page=${page}&include_adult=false`;
 
   const data = await axios.get(multiSearch);
   return data;

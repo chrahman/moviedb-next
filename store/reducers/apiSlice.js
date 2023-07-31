@@ -52,7 +52,9 @@ export const getPeopleDetail = createAsyncThunk("api/getPeopleDetail", async (id
     return peopleDetail.data;
 });
 
-export const getSearch = createAsyncThunk("api/getSearch", async (keyword, page) => {
+// Passing in one object because AsyncThunk only allows 1 parameter
+export const getSearch = createAsyncThunk("api/getSearch", async ({ keyword, page }) => {
+    console.log(keyword, page)
     const searchResult = await getSearchResult(keyword, page);
     return searchResult.data;
 });

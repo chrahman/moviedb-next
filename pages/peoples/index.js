@@ -1,4 +1,4 @@
-import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text } from "@chakra-ui/react";
+import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text, Button } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getPeoples, reset } from "../../store/reducers/apiSlice";
@@ -7,8 +7,12 @@ import Link from "next/link";
 import Loading from "../../components/Loading";
 import Pagination from "../../components/Pagination";
 
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useRouter } from "next/router";
+
 function index() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const allPeoples = useSelector((state) => state.api.peoples);
   const isLoading = useSelector((state) => state.api.isLoading);
 
@@ -36,9 +40,14 @@ function index() {
       ) :
         allPeoples.results && (
           <>
+            <Box display="flex" justifyContent="space-between" alignItems="start">
             <Heading as="h3" size="md" my="6">
               Popular Peoples
             </Heading>
+            <Button colorScheme="teal" variant="outline" size="sm" mt="5" ml="5" onClick={()=>router.back()}>
+                <AiOutlineArrowLeft/> Back
+            </Button>
+          </Box>
             <Grid
               templateColumns={{
                 md: "repeat(5, 1fr)",

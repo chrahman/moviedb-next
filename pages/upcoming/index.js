@@ -1,4 +1,4 @@
-import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text } from "@chakra-ui/react";
+import {Box, Card, CardBody, Grid, GridItem, Heading, Image, Text, Button } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getUpcomings, reset } from "../../store/reducers/apiSlice";
@@ -7,13 +7,17 @@ import Link from "next/link";
 import Loading from "../../components/Loading";
 import Pagination from "../../components/Pagination";
 
+import { AiOutlineArrowLeft } from "react-icons/ai";
+import { useRouter } from "next/router";
+
 function index() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const upcomingMovies = useSelector((state) => state.api.movies);
   const isLoading = useSelector((state) => state.api.isLoading);
 
   const [page, setPage] = useState(1);
-  const totalPages = upcomingMovies.total_pages;
+  const totalPages = upcomingMovies.total_pages > 500 ? 500 : upcomingMovies.total_pages;
 
   const handlePageChange = (page) => {
     setPage(page);
@@ -21,7 +25,7 @@ function index() {
 
   useEffect(() => {
     dispatch(reset());
-    dispatch(getUpcomings());
+    dispatch(getUpcomings(page));
   }, [dispatch, page]);
 
   return (
@@ -34,9 +38,14 @@ function index() {
       ) :
       upcomingMovies.results && (
         <>
-          <Heading as="h3" size="md" my="6">
-            Trending Movies
-          </Heading>
+          <Box display="flex" justifyContent="space-between" alignItems="start">
+            <Heading as="h3" size="md" my="6">
+              Upcoming Movies
+            </Heading>
+            <Button colorScheme="teal" variant="outline" size="sm" mt="5" ml="5" onClick={()=>router.back()}>
+                <AiOutlineArrowLeft/> Back
+            </Button>
+          </Box>
           <Grid
             templateColumns={{
               md: "repeat(5, 1fr)",
